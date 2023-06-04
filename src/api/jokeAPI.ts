@@ -7,7 +7,6 @@ const ENDPOINT_URL = "https://retoolapi.dev/zu9TVE/jokes"
 export const fetchJokes = async ({page, limit}:JokesPaginate, {sortField, sortOrder}:Sort):Promise <Jokes>=>{
     try{
         const response = await axios.get(`${ENDPOINT_URL}/?_page=${page}&_limit=${limit}&_sort=${sortField}&_order=${sortOrder}`);
-        console.log(response);
         const links = response.headers.link;
         const parsedLinks:Pagination = parseLinkHeader(links)
         return {Jokes: response.data, pagination:parsedLinks };
@@ -39,7 +38,6 @@ export const updateJoke = async (id:string, joke: Joke):Promise<Joke>=>{
         const response = await axios.patch(`${ENDPOINT_URL}/${id}`,joke);
         return response.data;
     }catch(error){
-        console.log(error)
         throw new Error('Failed to update Joke.');
     }
 }

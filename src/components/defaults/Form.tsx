@@ -13,13 +13,12 @@ const Form = (joke: Joke) => {
   }, [joke]);
 
   const handleSubmit = async () => {
-    console.log(jokeUpdate);
     if (id) {
       const jokeData = await updateJoke(id, jokeUpdate);
-      console.log(jokeData);
+      setJokeUpdate(jokeData);
     } else {
       const jokeData = await createJoke(jokeUpdate);
-      console.log(jokeData);
+      setJokeUpdate(jokeData);
     }
   };
 
@@ -27,8 +26,6 @@ const Form = (joke: Joke) => {
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => {
-    console.log(event.target.value);
-    console.log(key);
     const updateJoke = { ...jokeUpdate, [key]: event.target.value };
     setJokeUpdate(updateJoke);
   };

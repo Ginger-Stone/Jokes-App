@@ -34,7 +34,5 @@ Object.entries(parsedLinks).forEach(([key, value]) => {
   }
 });
 
-console.log(pageNumbersObject)
-
 return pageNumbersObject
 }

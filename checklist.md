@@ -24,3 +24,6 @@
 - [x] Then start developing the application in another branch.
 - [ ] Style the application😊
 - [ ] Fix routing issue
+- [ ] Toggle sort onClick - if asc then desc and vice versa
+- [ ] Textbox for body of joke input in form
+- [ ] On successful submission of form, return info stating the status either success or failure

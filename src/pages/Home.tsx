@@ -32,7 +32,6 @@ const Home = () => {
   const loadJokes = async () => {
     try {
       const jokesData = await fetchJokes(currentPageLimit, sortDetails);
-      console.log(jokes);
       setJokes(jokesData.Jokes);
       setPaginationData(jokesData.pagination);
     } catch (error) {
@@ -60,7 +59,6 @@ const Home = () => {
         { sortField, sortOrder },
         currentPageLimit
       );
-      console.log(currentPageLimit);
       setJokes(jokesData);
       updateSortDetails({ sortField, sortOrder });
     } catch (error) {

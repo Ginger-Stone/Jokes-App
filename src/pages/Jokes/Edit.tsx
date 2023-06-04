@@ -9,7 +9,6 @@ const Edit = () => {
   const { id } = useParams<{ id: string }>();
   const [joke, setJoke] = useState<Joke>(initialJokeState);
   useEffect(() => {
-    console.log(id);
     loadJoke();
   }, []);
 
@@ -17,7 +16,6 @@ const Edit = () => {
     try {
       if (id) {
         const jokeData = await fetchJoke(id);
-        console.log(jokeData);
         setJoke(jokeData);
       }
     } catch (error) {
