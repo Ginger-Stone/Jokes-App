@@ -1,3 +1,4 @@
+const path = require("path");
 require("dotenv").config();
 const prod = process.env.NODE_ENV === "production";
 
@@ -9,14 +10,12 @@ module.exports = {
   mode: prod ? "production" : "development",
   entry: "./src/index.tsx",
   output: {
-    path: __dirname + "/dist/",
+    path: path.resolve(__dirname, "dist"),
+    publicPath: "/",
   },
   resolve: {
     // Add `.ts` and `.tsx` as a resolvable extension.
     extensions: [".ts", ".tsx", ".js", ".css", ".scss"],
-    alias: {
-      browser: "parse-link-header/browser.js",
-    },
   },
   module: {
     rules: [

@@ -1,19 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { fetchJokes } from "../api/jokeAPI";
-import { Joke, JokesPaginate, Pagination } from "../types/jokeInterfaces";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { fetchJokes, sortJokes } from "../api/jokeAPI";
+import {
+  Joke,
+  JokesPaginate,
+  Pagination,
+  Sort,
+  initialPaginateState,
+  initialSortState,
+} from "../types/jokeInterfaces";
 import { Loader, Button } from "../components";
 import styles from "../styles/pages/home.module.scss";
 import { formatDate } from "../utils/formatDate";
+import { Link, useNavigate } from "react-router-dom";
+import Dropdown from "../components/defaults/Dropdown";
+import { DropdownDataType } from "../types/interfaces";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [jokes, setJokes] = useState<Joke[] | null>(null);
   const [paginationData, setPaginationData] = useState<Pagination | null>(null);
-  const initialPaginateState: JokesPaginate = {
-    page: 1,
-    limit: 5,
-  };
+  const [sortDetails, updateSortDetails] = useState<Sort>(initialSortState);
   const [currentPageLimit, setCurrentPageLimit] =
     useState<JokesPaginate>(initialPaginateState);
+
+  const PageLimitDropdownData: DropdownDataType = [5, 10];
 
   useEffect(() => {
     loadJokes();
@@ -21,7 +31,7 @@ const Home = () => {
 
   const loadJokes = async () => {
     try {
-      const jokesData = await fetchJokes(currentPageLimit);
+      const jokesData = await fetchJokes(currentPageLimit, sortDetails);
       console.log(jokes);
       setJokes(jokesData.Jokes);
       setPaginationData(jokesData.pagination);
@@ -44,8 +54,21 @@ const Home = () => {
     });
   };
 
-  const handleLimitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // setSelectedOption(event.target.value);
+  const handleSortJokes = async ({ sortField, sortOrder }: Sort) => {
+    try {
+      const jokesData = await sortJokes(
+        { sortField, sortOrder },
+        currentPageLimit
+      );
+      console.log(currentPageLimit);
+      setJokes(jokesData);
+      updateSortDetails({ sortField, sortOrder });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleLimitChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = parseInt(event.target.value);
     setCurrentPageLimit({
       page: currentPageLimit.page,
@@ -66,41 +89,26 @@ const Home = () => {
     }
   };
 
+  // const handleLimitChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  //   const value = parseInt(event.target.value);
+  //   updateSelection(value);
+  // };
+
   return (
     <div className={styles.home}>
       <nav>
         <Button
           label="Add New Joke"
           handleClick={() => {
-            // ?redirect to joke page
+            navigate("/jokes/create");
           }}
         />
-        <div className={styles.page_size}>
-          <div className={styles.page_size_option}>
-            <label htmlFor="page-size">
-              <input
-                defaultChecked={currentPageLimit.limit == 5}
-                type="radio"
-                value={5}
-                id="limit-five"
-                name="page-size"
-                onChange={handleLimitChange}
-              />
-              5
-            </label>
-            <label htmlFor="limit_ten">
-              <input
-                defaultChecked={currentPageLimit.limit == 10}
-                type="radio"
-                value={10}
-                id="limit-ten"
-                name="page-size"
-                onChange={handleLimitChange}
-              />
-              10
-            </label>
-          </div>
-        </div>
+        <Dropdown
+          currentSelection={currentPageLimit.limit}
+          availableOptions={PageLimitDropdownData}
+          handleSelectionChange={handleLimitChange}
+        />
+        {/* //? Dark mode toggle to be a separate component */}
         <div>
           <input type="checkbox" id="dark-mode" />{" "}
           <label htmlFor="dark-mode">Dark</label>
@@ -111,14 +119,28 @@ const Home = () => {
           <tr>
             <th>Title</th>
             <th>Author</th>
-            <th>Created Date</th>
-            <th>Views</th>
+            <th
+              onClick={() => {
+                handleSortJokes({ sortField: "CreatedAt", sortOrder: "asc" });
+              }}
+            >
+              Created Date ^
+            </th>
+            <th
+              onClick={() => {
+                handleSortJokes({ sortField: "Views", sortOrder: "asc" });
+              }}
+            >
+              Views ^
+            </th>
           </tr>
         </thead>
         <tbody>
           {jokes?.map((joke) => (
             <tr key={joke.id}>
-              <td>{joke.Title}</td>
+              <td>
+                <Link to={`/jokes/edit/${joke.id}`}>{joke.Title}</Link>
+              </td>
               <td>{joke.Author.replace(/@.*\./, "@***.")}</td>
               <td>{formatDate(joke.CreatedAt)}</td>
               <td style={{ color: colorPicker(joke.Views) }}>{joke.Views}</td>
