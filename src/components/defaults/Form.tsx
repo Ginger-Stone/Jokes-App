@@ -3,6 +3,7 @@ import { Joke, initialJokeState } from "../../types/jokeInterfaces";
 import { formatDate } from "../../utils/formatDate";
 import { useParams } from "react-router-dom";
 import { createJoke, updateJoke } from "../../api/jokeAPI";
+import styles from "../../styles/components/defaults/form.module.scss";
 
 const Form = (joke: Joke) => {
   const { id } = useParams<{ id: string }>(); //id presence determines if its a new/edited joke
@@ -14,11 +15,21 @@ const Form = (joke: Joke) => {
 
   const handleSubmit = async () => {
     if (id) {
-      const jokeData = await updateJoke(id, jokeUpdate);
-      setJokeUpdate(jokeData);
+      updateJoke(id, jokeUpdate)
+        .then((res) => {
+          setJokeUpdate(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else {
-      const jokeData = await createJoke(jokeUpdate);
-      setJokeUpdate(jokeData);
+      createJoke(jokeUpdate)
+        .then(() => {
+          setJokeUpdate(initialJokeState);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
 
@@ -30,7 +41,7 @@ const Form = (joke: Joke) => {
     setJokeUpdate(updateJoke);
   };
   return (
-    <form>
+    <form className={styles.form}>
       <label htmlFor="Title">
         Title
         <input
@@ -41,21 +52,39 @@ const Form = (joke: Joke) => {
           onChange={(event) => handleInputChange(event, "Title")}
         />
       </label>
-      <input
-        type="text"
-        placeholder="Joke Author"
-        value={jokeUpdate.Author}
-        onChange={(event) => handleInputChange(event, "Author")}
-      />
-      <input
-        type="text"
-        placeholder="Joke Body"
-        value={jokeUpdate.Body}
-        onChange={(event) => handleInputChange(event, "Body")}
-      />
-      {id && <input type="text" readOnly value={jokeUpdate.Views} />}
+      <label htmlFor="Title">
+        Author
+        <input
+          type="text"
+          placeholder="Joke Author"
+          value={jokeUpdate.Author}
+          onChange={(event) => handleInputChange(event, "Author")}
+        />
+      </label>
+      <label htmlFor="Title">
+        Body
+        <input
+          type="text"
+          placeholder="Joke Body"
+          value={jokeUpdate.Body}
+          onChange={(event) => handleInputChange(event, "Body")}
+        />
+      </label>
       {id && (
-        <input type="text" readOnly value={formatDate(jokeUpdate.CreatedAt)} />
+        <label htmlFor="Title">
+          Views
+          <input type="text" readOnly value={jokeUpdate.Views} />
+        </label>
+      )}
+      {id && (
+        <label htmlFor="Title">
+          Created At
+          <input
+            type="text"
+            readOnly
+            value={formatDate(jokeUpdate.CreatedAt)}
+          />
+        </label>
       )}
 
       <input type="button" value="Submit" onClick={handleSubmit} />

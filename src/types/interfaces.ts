@@ -3,8 +3,9 @@ import { JokesPaginate } from "./jokeInterfaces";
 
 interface Button{
     label: string,
-    handleClick: () => void;
+    handleClick?: () => void;
     disabled?: boolean,
+    cta?:boolean, //set whether the button has a bright bg or not
 }
 
 type DropdownDataType = number[]|string[];
@@ -22,4 +23,14 @@ const DateFormat: Intl.DateTimeFormatOptions = {
     year: "numeric"
 }
 
-export {Button, DropdownData, DropdownDataType, DateFormat}
+interface Info{
+    success:Boolean
+    message:string
+}
+
+const initialInfoState:Info={
+    success:false,
+    message:""
+}
+
+export {Button, DropdownData, DropdownDataType, DateFormat, Info, initialInfoState}

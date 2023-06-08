@@ -1,0 +1,30 @@
+button {
+  padding: 8px 5px;
+  min-width: 20vw;
+  background-color: var(--primary);
+  border: 3px solid var(--primary);
+  color: var(--background);
+  font-weight: 400;
+  font-size: 16px;
+}
+button:hover {
+  border: 3px solid var(--secondary);
+  background-color: var(--secondary);
+  color: var(--background);
+  font-weight: 600;
+}
+button:disabled {
+  border: 3px solid rgba(142, 140, 140, 0.521);
+  background-color: rgba(142, 140, 140, 0.521);
+  color: whitesmoke;
+}
+button:disabled:hover {
+  border: 3px solid rgba(142, 140, 140, 0.521);
+  background-color: rgba(142, 140, 140, 0.521);
+  color: whitesmoke;
+  font-weight: inherit;
+}
+.no_cta {
+  background-color: transparent;
+  color: var(--primary);
+}

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Joke, Jokes, JokesPaginate, Pagination, Sort } from '../types/jokeInterfaces';
 import { parseLinkHeader } from '../utils/parseLinkHeader';
+import { Info } from '../types/interfaces';
 
 const ENDPOINT_URL = "https://retoolapi.dev/zu9TVE/jokes"
 
@@ -42,10 +43,10 @@ export const updateJoke = async (id:string, joke: Joke):Promise<Joke>=>{
     }
 }
 
-export const deleteJoke = async (id: string)=>{
+export const deleteJoke = async (id: string):Promise<Info>=>{
     try{
-        const response = await axios.patch(`${ENDPOINT_URL}/${id}`);
-        return response.data;
+        const response = await axios.delete(`${ENDPOINT_URL}/${id}`);
+        return {success:true, message:"Joke deleted successfully."};
     }catch(error){
         throw new Error('Failed to update Joke.');
     }

@@ -4,18 +4,15 @@ import {
   initialPaginateState,
 } from "../../types/jokeInterfaces";
 import { DropdownData, DropdownDataType } from "../../types/interfaces";
+import styles from "../../styles/components/defaults/dropdown.module.scss";
 
 const Dropdown = ({
   currentSelection,
   availableOptions,
   handleSelectionChange,
 }: DropdownData) => {
-  const [selection, updateSelection] = useState<string | number>(
-    initialPaginateState.limit
-  );
-
   return (
-    <div>
+    <div className={styles.dropdown}>
       <label htmlFor="page-limit">Page limit:</label>
 
       <select

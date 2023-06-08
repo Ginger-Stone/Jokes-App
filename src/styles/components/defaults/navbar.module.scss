@@ -1,0 +1,43 @@
+.nav {
+  position: relative;
+  width: calc(100vw - 40px);
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 30px;
+  padding: 0 20px;
+  .actions {
+    position: absolute;
+    margin: auto 29%;
+    top: 0;
+    :nth-child(1) {
+      margin-right: 2px;
+    }
+  }
+  .centered {
+    margin: auto 42%;
+  }
+}
+
+@media screen and (max-width: 1099px) {
+  .nav {
+    .actions {
+      margin: auto 28.9%;
+    }
+    .centered {
+      margin: auto 42%;
+    }
+  }
+}
+
+@media screen and (max-width: 999px) {
+  .nav {
+    .actions {
+      margin: auto 28%;
+    }
+    .centered {
+      margin: auto 42%;
+    }
+  }
+}

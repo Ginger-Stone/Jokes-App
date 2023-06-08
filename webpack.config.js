@@ -4,6 +4,7 @@ const prod = process.env.NODE_ENV === "production";
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const loader = require("sass-loader");
 
 module.exports = {
   target: "web",
@@ -32,7 +33,7 @@ module.exports = {
         use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
       {
-        test: /\.scss$/,
+        test: /\.s[ac]ss$/i,
         use: ["style-loader", "css-loader", "sass-loader"],
       },
     ],
@@ -44,4 +45,8 @@ module.exports = {
     }),
     new MiniCssExtractPlugin(),
   ],
+  devServer: {
+    // to serve your index.html in place of 404 responses
+    historyApiFallback: true,
+  },
 };

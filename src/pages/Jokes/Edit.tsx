@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { Joke, initialJokeState } from "../../types/jokeInterfaces";
 import { formatDate } from "../../utils/formatDate";
 import Form from "../../components/defaults/Form";
+import Navbar from "../../components/defaults/Navbar";
 
 const Edit = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +26,7 @@ const Edit = () => {
 
   return (
     <div>
-      {/* //? Add buttons DELETE & CLOSE- as component to be shared with Create */}
+      <Navbar />
       <Form
         id={joke.id}
         Body={joke.Body}

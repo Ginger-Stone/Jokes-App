@@ -1,29 +1,27 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { fetchJokes, sortJokes } from "../api/jokeAPI";
 import {
   Joke,
-  JokesPaginate,
   Pagination,
   Sort,
-  initialPaginateState,
   initialSortState,
 } from "../types/jokeInterfaces";
 import { Loader, Button } from "../components";
 import styles from "../styles/pages/home.module.scss";
 import { formatDate } from "../utils/formatDate";
 import { Link, useNavigate } from "react-router-dom";
-import Dropdown from "../components/defaults/Dropdown";
-import { DropdownDataType } from "../types/interfaces";
+import Navbar from "../components/defaults/Navbar";
+import { CurrentPageLimitContext } from "../context/currentPageLimitContext";
+import { useTheme } from "../context/themeContext";
 
 const Home = () => {
-  const navigate = useNavigate();
+  const { theme } = useTheme();
   const [jokes, setJokes] = useState<Joke[] | null>(null);
   const [paginationData, setPaginationData] = useState<Pagination | null>(null);
   const [sortDetails, updateSortDetails] = useState<Sort>(initialSortState);
-  const [currentPageLimit, setCurrentPageLimit] =
-    useState<JokesPaginate>(initialPaginateState);
-
-  const PageLimitDropdownData: DropdownDataType = [5, 10];
+  const { currentPageLimit, UpdatePageLimit } = useContext(
+    CurrentPageLimitContext
+  );
 
   useEffect(() => {
     loadJokes();
@@ -40,14 +38,14 @@ const Home = () => {
   };
 
   const prevPage = () => {
-    setCurrentPageLimit({
+    UpdatePageLimit?.({
       page: paginationData?.prev,
       limit: currentPageLimit.limit,
     });
   };
 
   const nextPage = () => {
-    setCurrentPageLimit({
+    UpdatePageLimit?.({
       page: paginationData?.next,
       limit: currentPageLimit.limit,
     });
@@ -66,14 +64,6 @@ const Home = () => {
     }
   };
 
-  const handleLimitChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const value = parseInt(event.target.value);
-    setCurrentPageLimit({
-      page: currentPageLimit.page,
-      limit: value === 5 || value === 10 ? value : currentPageLimit.limit,
-    });
-  };
-
   const colorPicker = (value: number): string => {
     // 0<TOMATO>25, 26<ORANGE>50, 51<YELLOW>75, 76<GREEN>100
     if (value >= 76 && value <= 100) {
@@ -87,67 +77,81 @@ const Home = () => {
     }
   };
 
-  // const handleLimitChange = (event: ChangeEvent<HTMLSelectElement>) => {
-  //   const value = parseInt(event.target.value);
-  //   updateSelection(value);
-  // };
-
   return (
     <div className={styles.home}>
-      <nav>
-        <Button
-          label="Add New Joke"
-          handleClick={() => {
-            navigate("/jokes/create");
-          }}
-        />
-        <Dropdown
-          currentSelection={currentPageLimit.limit}
-          availableOptions={PageLimitDropdownData}
-          handleSelectionChange={handleLimitChange}
-        />
-        {/* //? Dark mode toggle to be a separate component */}
-        <div>
-          <input type="checkbox" id="dark-mode" />{" "}
-          <label htmlFor="dark-mode">Dark</label>
+      <Navbar />
+      <div className={styles.table}>
+        <div className={styles.header}>Title</div>
+        <div className={styles.header}>Author</div>
+        <div
+          className={styles.header}
+          onClick={() =>
+            handleSortJokes({
+              sortField: "CreatedAt",
+              sortOrder: `${
+                sortDetails.sortField == "CreatedAt" &&
+                sortDetails.sortOrder == "asc"
+                  ? "desc"
+                  : "asc"
+              }`,
+            })
+          }
+        >
+          Created Date{" "}
+          <span
+            className={
+              sortDetails.sortField == "CreatedAt"
+                ? sortDetails.sortOrder == "asc"
+                  ? styles.sort_arrow_asc
+                  : styles.sort_arrow_desc
+                : styles.sort_arrow_inactive
+            }
+          >
+            ^
+          </span>
         </div>
-      </nav>
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th
-              onClick={() => {
-                handleSortJokes({ sortField: "CreatedAt", sortOrder: "asc" });
-              }}
-            >
-              Created Date ^
-            </th>
-            <th
-              onClick={() => {
-                handleSortJokes({ sortField: "Views", sortOrder: "asc" });
-              }}
-            >
-              Views ^
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {jokes?.map((joke) => (
-            <tr key={joke.id}>
-              <td>
-                <Link to={`/jokes/edit/${joke.id}`}>{joke.Title}</Link>
-              </td>
-              <td>{joke.Author.replace(/@.*\./, "@***.")}</td>
-              <td>{formatDate(joke.CreatedAt)}</td>
-              <td style={{ color: colorPicker(joke.Views) }}>{joke.Views}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div
+          className={styles.header}
+          onClick={() =>
+            handleSortJokes({
+              sortField: "Views",
+              sortOrder: `${
+                sortDetails.sortField == "Views" &&
+                sortDetails.sortOrder == "asc"
+                  ? "desc"
+                  : "asc"
+              }`,
+            })
+          }
+        >
+          Views{" "}
+          <span
+            className={
+              sortDetails.sortField == "Views"
+                ? sortDetails.sortOrder == "asc"
+                  ? styles.sort_arrow_asc
+                  : styles.sort_arrow_desc
+                : styles.sort_arrow_inactive
+            }
+          >
+            ^
+          </span>
+        </div>
+
+        {jokes?.map((joke) => (
+          <React.Fragment key={joke.id}>
+            <div>
+              <Link to={`/jokes/edit/${joke.id}`}>{joke.Title}</Link>
+            </div>
+            <div>{joke?.Author?.replace(/@.*\./, "@***.")}</div>
+            <div>{formatDate(joke.CreatedAt)}</div>
+            <div style={{ color: colorPicker(joke.Views) }}>{joke.Views}</div>
+          </React.Fragment>
+        ))}
+      </div>
+
       {!jokes && <Loader />}
-      <div>
+      <div className={styles.pagination}>
         <Button
           label={"< Previous"}
           handleClick={prevPage}
